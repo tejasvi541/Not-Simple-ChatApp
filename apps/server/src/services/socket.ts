@@ -1,7 +1,8 @@
 import { Server } from "socket.io";
 import Redis from "ioredis";
 import dotenv from "dotenv";
-dotenv.config({ path: __dirname + "/.env" });
+import prismaClient from "./prisma";
+dotenv.config({ path: __dirname + "/../.env" });
 
 const publisher = new Redis({
   host: "redis-chatwithme-chatwithme.a.aivencloud.com",
@@ -45,10 +46,11 @@ class SocketService {
         await publisher.publish("MESSAGES", JSON.stringify({ message }));
       });
     });
-    subscriber.on("message", (channel, message) => {
+    subscriber.on("message", async (channel, message) => {
       if (channel === "MESSAGES") {
         console.log("message", message);
         io.emit("message", JSON.parse(message));
+        await prismaClient.message.create({ data: { text: message } });
       }
     });
   }
