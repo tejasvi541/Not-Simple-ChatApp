@@ -2,6 +2,7 @@ import { Server } from "socket.io";
 import Redis from "ioredis";
 import dotenv from "dotenv";
 import prismaClient from "./prisma";
+import { produceMessage } from "./kafka";
 dotenv.config({ path: __dirname + "/../.env" });
 
 const publisher = new Redis({
@@ -50,7 +51,7 @@ class SocketService {
       if (channel === "MESSAGES") {
         console.log("message", message);
         io.emit("message", JSON.parse(message));
-        await prismaClient.message.create({ data: { text: message } });
+        await produceMessage(message);
       }
     });
   }
