@@ -5,7 +5,6 @@ async function init() {
   const httpServer = http.createServer();
   const socketService = new SocketService();
   const PORT = process.env.PORT || 8000;
-
   socketService.io.attach(httpServer);
 
   socketService.initListeners();

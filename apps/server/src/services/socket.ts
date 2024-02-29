@@ -1,12 +1,31 @@
 import { Server } from "socket.io";
+import Redis from "ioredis";
+import dotenv from "dotenv";
+dotenv.config({ path: __dirname + "/.env" });
+
+const publisher = new Redis({
+  host: "redis-chatwithme-chatwithme.a.aivencloud.com",
+  port: 27967,
+  username: "default",
+  password: process.env.REDIS_PASSWORD,
+});
+const subscriber = new Redis({
+  host: "redis-chatwithme-chatwithme.a.aivencloud.com",
+  port: 27967,
+  username: "default",
+  password: process.env.REDIS_PASSWORD,
+});
 
 class SocketService {
   private _io: Server;
   constructor() {
     console.log("SocketService initialized");
+    console.log(process.env.REDIS_PASSWORD);
+
     this._io = new Server({
       cors: { allowedHeaders: ["*"], origin: "*" },
     });
+    subscriber.subscribe("MESSAGES");
   }
 
   get io(): Server {
@@ -23,8 +42,14 @@ class SocketService {
 
       socket.on("event:message", async ({ message }: { message: string }) => {
         console.log("message", message);
-        // io.emit("event:message", message);
+        await publisher.publish("MESSAGES", JSON.stringify({ message }));
       });
+    });
+    subscriber.on("message", (channel, message) => {
+      if (channel === "MESSAGES") {
+        console.log("message", message);
+        io.emit("message", JSON.parse(message));
+      }
     });
   }
 }
