@@ -18,7 +18,7 @@ export default function Page() {
         />
         <button
           className={classes["button"]}
-          onClick={(e) => sendMessage(message)}>
+          onClick={() => sendMessage(message)}>
           Send
         </button>
       </div>

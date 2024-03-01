@@ -3,19 +3,20 @@ import Redis from "ioredis";
 import dotenv from "dotenv";
 import prismaClient from "./prisma";
 import { produceMessage } from "./kafka";
-dotenv.config({ path: __dirname + "/../.env" });
+import path from "path";
+dotenv.config({ path: path.resolve("./.env") });
 
 const publisher = new Redis({
   host: "redis-chatwithme-chatwithme.a.aivencloud.com",
   port: 27967,
   username: "default",
-  password: process.env.REDIS_PASSWORD,
+  password: process.env.REDIS_PASSWORD || "",
 });
 const subscriber = new Redis({
   host: "redis-chatwithme-chatwithme.a.aivencloud.com",
   port: 27967,
   username: "default",
-  password: process.env.REDIS_PASSWORD,
+  password: process.env.REDIS_PASSWORD || "",
 });
 
 class SocketService {
@@ -23,7 +24,6 @@ class SocketService {
   constructor() {
     console.log("SocketService initialized");
     console.log(process.env.REDIS_PASSWORD);
-
     this._io = new Server({
       cors: { allowedHeaders: ["*"], origin: "*" },
     });
