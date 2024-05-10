@@ -7,14 +7,14 @@ import path from "path";
 dotenv.config({ path: path.resolve("./.env") });
 
 const publisher = new Redis({
-  host: "redis-chatwithme-chatwithme.a.aivencloud.com",
-  port: 27967,
+  host: "localhost",
+  port: 6379,
   username: "default",
   password: process.env.REDIS_PASSWORD || "",
 });
 const subscriber = new Redis({
-  host: "redis-chatwithme-chatwithme.a.aivencloud.com",
-  port: 27967,
+  host: "localhost",
+  port: 6379,
   username: "default",
   password: process.env.REDIS_PASSWORD || "",
 });
@@ -23,7 +23,6 @@ class SocketService {
   private _io: Server;
   constructor() {
     console.log("SocketService initialized");
-    console.log(process.env.REDIS_PASSWORD);
     this._io = new Server({
       cors: { allowedHeaders: ["*"], origin: "*" },
     });

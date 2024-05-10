@@ -7,15 +7,15 @@ import prismaClient from "./prisma";
 dotenv.config({ path: path.resolve("./.env") });
 
 const kafka = new Kafka({
-  brokers: [process.env.KAFKA_HOST as string],
-  ssl: { ca: fs.readFileSync(path.resolve("./ca.pem")) },
-  sasl: {
-    username: process.env.KAFKA_USERNAME || "",
-    password: process.env.KAFKA_PASSWORD || "",
-    mechanism: "plain",
-  },
+  brokers: [`${process.env.KAFKA_HOST}:${process.env.KAFKA_PORT}`],
+  ssl:
+    process.env.KAFKA_SSL === "true"
+      ? {
+          rejectUnauthorized: false, // Only use this option in development/test environments
+          ca: [fs.readFileSync(path.resolve("./ca.pem"))],
+        }
+      : false,
 });
-
 let producer: Producer | null = null;
 
 export async function createProducer() {
