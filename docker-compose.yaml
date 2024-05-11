@@ -14,7 +14,7 @@ services:
 
   redis:
     container_name: redis
-    image: redis:latest
+    image: redis/redis-stack
     ports:
       - "6379:6379"
       - "8001:8001"
@@ -43,6 +43,8 @@ services:
       KAFKA_CREATE_TOPICS: "MESSAGES:1:1"
     volumes:
       - kafka-data:/var/lib/kafka/data
+    depends_on:
+      - "zookeeper"
 
 volumes:
   data:
