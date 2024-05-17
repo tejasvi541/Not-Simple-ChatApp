@@ -6,18 +6,14 @@ import { produceMessage } from "./kafka";
 import path from "path";
 dotenv.config({ path: path.resolve("./.env") });
 
-const publisher = new Redis({
-  host: "localhost",
-  port: 6379,
-  username: "default",
-  password: process.env.REDIS_PASSWORD || "",
-});
-const subscriber = new Redis({
-  host: "localhost",
-  port: 6379,
-  username: "default",
-  password: process.env.REDIS_PASSWORD || "",
-});
+const publisher = new Redis();
+//   {
+//   host: "localhost",
+//   port: 6379,
+//   username: "default",
+//   password: process.env.REDIS_PASSWORD || "",
+// }
+const subscriber = new Redis();
 
 class SocketService {
   private _io: Server;
@@ -38,7 +34,7 @@ class SocketService {
    */
   public initListeners() {
     const io = this._io;
-    io.on("connection", (socket) => {
+    io.on("connect", (socket) => {
       console.log("A user connected ", socket.id);
 
       socket.on("event:message", async ({ message }: { message: string }) => {
